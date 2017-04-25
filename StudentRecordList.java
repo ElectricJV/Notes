@@ -45,8 +45,7 @@ public class StudentRecordList {
 
 	/*
 	 * Finds the record to delete.
-	 * Then moves the last record to the one to be.
-	 * Deleted.
+	 * Then moves the last record to the one to be deleted.
 	 * Shortens the list (decrease the size of the list).
 	 * Returns true if deleted.
 	 */
@@ -76,6 +75,46 @@ public class StudentRecordList {
 	}
 	
 	/**
+	 * Bubble sort method 
+	 */
+	public void bubbleSort() {
+		for (int pass = 1; pass < size; pass++) {
+			for (int element = 0; element < size -1; element++) {
+				if (list[element].getStudentName().compareToIgnoreCase(list[element+1].getStudentName())>0) {
+					
+					StudentRecord hold = list[element];
+					list[element] = list[element+1];
+					list[element+1] = hold;
+				}	// End if
+			}	// End for element
+		}	// End for pass
+	}	// End bubblesort
+	
+	/**
+	 * Binary Search - Search for a name
+	 */
+	public int binarySearch(String searchKey) {
+		int low = 0;
+		int high = size -1;
+		int middle;
+		
+		while (low <= high) {
+			middle = (high + low)/2;
+			if (searchKey.equalsIgnoreCase(list[middle].getStudentName())) {
+				return middle; // Element was found
+			}
+			else if (searchKey.compareToIgnoreCase(list[middle].getStudentName())<0) {
+				high = middle -1;
+			}
+			else {
+				low = middle +1;
+			}
+		}
+		return -1; // Element was not found
+	}
+	
+	
+	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -86,7 +125,10 @@ public class StudentRecordList {
 			char command;
 			command = JOptionPane.showInputDialog(null, "i - insert a student\n"
 					+ "p - print the list\n" 
-					+ "d - deletes a student").charAt(0);
+					+ "d - delete a student\n"
+					+ "c - change a record\n"
+					+ "s - sort by name\n"
+					+ "f - find a person\n").charAt(0);
 
 			switch (command) {
 			case 'i': {
@@ -116,11 +158,55 @@ public class StudentRecordList {
 				else {
 					JOptionPane.showMessageDialog(null, "Record deleted");
 				}
+				break;
+			}
+			case 'c': {
+				String record = JOptionPane.showInputDialog(null, "Enter record to delete",
+						"Tony Campos,P123456,45 Daviselm,100");
+
+				StudentRecord sInfo = new StudentRecord();
+				sInfo.processRecord(record);
+				
+				record = JOptionPane.showInputDialog(null, "Enter <name>,<ID>,<address>,<average>",
+						"Tony Campos,P123456,45 Daviselm,100"); 
+				
+				StudentRecord newR = new StudentRecord();
+				newR.processRecord(record);
+				
+				if (!studentList.change(sInfo, newR)) {
+					JOptionPane.showMessageDialog(null, "Record unable to change");
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Record changed");
+				}
+				break;
 			}
 			case 'p': {
 				StudentRecord [] myRecordList = studentList.getList();
 				for (int i = 0; i < studentList.getSize(); i++) {
 					System.out.println(myRecordList[i]);
+				}
+				break;
+			}
+			case 's': {
+				studentList.bubbleSort();
+				break;
+			}
+			case 'f': {
+				String record = JOptionPane.showInputDialog(null, "Enter name to find",
+						"Tony Campos,P123456,45 Daviselm,100");
+
+				StudentRecord sInfo = new StudentRecord();
+				sInfo.processRecord(record);
+				
+				int loc = studentList.binarySearch(sInfo.getStudentName());
+				
+				if (loc < 0) {
+					JOptionPane.showMessageDialog(null, "Record not found");
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Record found!");
+					System.out.println(loc);
 				}
 				break;
 			}
